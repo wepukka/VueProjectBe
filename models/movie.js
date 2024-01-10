@@ -14,6 +14,9 @@ const movieSchema = new Schema({
     type: String,
     required: true,
   },
+  lore: {
+    type: String,
+  },
 });
 
 const movie = mongoose.model("Movie", movieSchema);

@@ -52,16 +52,46 @@ router.get("/all-movies", function (req, res) {
     });
 });
 
-// DELETE MOVIE  //
-// Switch from get to post or delete method //
-router.get("/movie/:id", (req, res) => {
-  const id = req.params.id;
-  Movie.findByIdAndDelete(id)
+// GET MOVIE BY ID  //
+router.get("/movie/:id", function (req, res) {
+  Movie.findOne({ _id: req.params.id })
     .then((result) => {
-      res.json(result);
+      res.send({
+        payload: {
+          success: true,
+          data: result,
+        },
+      });
     })
     .catch((err) => {
-      console.log(err);
+      res.send({
+        payload: {
+          success: false,
+        },
+      });
+    });
+});
+
+// DELETE MOVIE  //
+// Switch from get to post or delete method //
+router.get("/del-movie/:id", (req, res) => {
+  const id = req.params.id;
+  console.log(id);
+  Movie.findByIdAndDelete(id)
+    .then((result) => {
+      res.send({
+        payload: {
+          success: true,
+          data: result,
+        },
+      });
+    })
+    .catch((err) => {
+      res.send({
+        payload: {
+          success: false,
+        },
+      });
     });
 });
 
