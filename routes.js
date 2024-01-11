@@ -45,7 +45,7 @@ router.post("/add-movie", async function (req, res) {
 
 // GET ALL MOVIES //
 router.get("/all-movies", function (req, res) {
-  Movie.find()
+    Movie.find()
     .then((result) => {
       res.send({
         payload: {
@@ -58,6 +58,7 @@ router.get("/all-movies", function (req, res) {
       res.send({
         payload: {
           success: false,
+          errorMsg:"Something went wrong"
         },
       });
     });
@@ -78,6 +79,7 @@ router.get("/movie/:id", function (req, res) {
       res.send({
         payload: {
           success: false,
+          errorMsg:"Something went wrong"
         },
       });
     });
@@ -86,6 +88,8 @@ router.get("/movie/:id", function (req, res) {
 // GET MOVIES WITH FILTERS  //
 router.get("/filter/", async function (req, res) {
   const filters = req.query;
+
+  console.log(filters)
 
   const query = Movie.find();
 
@@ -120,11 +124,12 @@ router.get("/filter/", async function (req, res) {
 
 // DELETE MOVIE  //
 // Switch from get to post or delete method //
-router.get("/del-movie/:id", (req, res) => {
+router.delete("/del-movie/:id", (req, res) => {
   const id = req.params.id;
-  console.log(id);
   Movie.findByIdAndDelete(id)
     .then((result) => {
+
+      console.log("MOVIE DELETED")
       res.send({
         payload: {
           success: true,
