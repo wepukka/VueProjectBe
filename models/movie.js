@@ -5,6 +5,7 @@ const movieSchema = new Schema({
   title: {
     type: String,
     required: true,
+    lowercase: true,
   },
   year: {
     type: String,
@@ -13,6 +14,7 @@ const movieSchema = new Schema({
   genre: {
     type: String,
     required: true,
+    lowercase: true,
   },
   lore: {
     type: String,

@@ -1,3 +1,4 @@
+const { checkIfMovieExists } = require("./controllers/movieControllers");
 const Movie = require("./models/movie");
 const express = require("express");
 const router = express.Router();
@@ -9,10 +10,18 @@ router.get("/", function (req, res) {
 });
 
 // ADD MOVIE //
-router.post("/add-movie", function (req, res) {
-  /*   console.log("body", req.body); */
-  const movie = new Movie(req.body);
+router.post("/add-movie", async function (req, res) {
+  let movieIsAlready = await checkIfMovieExists(req.body.title);
+  if (movieIsAlready) {
+    return res.send({
+      payload: {
+        success: false,
+        errorMsg: `Movie with the name ${req.body.title} already exists`,
+      },
+    });
+  }
 
+  const movie = new Movie(req.body);
   movie
     .save()
     .then((result) => {
@@ -24,9 +33,11 @@ router.post("/add-movie", function (req, res) {
       });
     })
     .catch((err) => {
+      console.log(err);
       res.send({
         payload: {
           success: false,
+          errorMsg: "Something went wrong!",
         },
       });
     });
@@ -72,6 +83,41 @@ router.get("/movie/:id", function (req, res) {
     });
 });
 
+// GET MOVIES WITH FILTERS  //
+router.get("/filter/", async function (req, res) {
+  const filters = req.query;
+
+  const query = Movie.find();
+
+  filters.title !== ""
+    ? query.find({
+        title: { $regex: filters.title.toLowerCase(), $options: "i" },
+      })
+    : null;
+  filters.year !== ""
+    ? query.find({ year: { $regex: filters.year, $options: "i" } })
+    : null;
+  filters.genre !== ""
+    ? query.find({ genre: filters.genre.toLowerCase() })
+    : null;
+
+  const movies = await query.exec();
+
+  movies.length === 0
+    ? res.send({
+        payload: {
+          success: false,
+          errorMsg: "No movies found with current filters!",
+        },
+      })
+    : res.send({
+        payload: {
+          success: true,
+          data: movies,
+        },
+      });
+});
+
 // DELETE MOVIE  //
 // Switch from get to post or delete method //
 router.get("/del-movie/:id", (req, res) => {
@@ -96,12 +142,31 @@ router.get("/del-movie/:id", (req, res) => {
 });
 
 // UPDATE MOVIE //
-router.post("/update-movie/:id", (req, res) => {
-  const updatedMovie = req.body;
-  Movie.updateOne({ _id: req.body.id }, { updatedMovie })
-    .then((result) => res.json(result))
+router.post("/update/:id", (req, res) => {
+  Movie.updateOne(
+    { _id: req.body._id },
+    {
+      title: req.body.title,
+      year: req.body.year,
+      genre: req.body.genre,
+      lore: req.body.lore,
+    }
+  )
+    .then((result) => {
+      res.send({
+        payload: {
+          success: true,
+          data: result,
+        },
+      });
+    })
     .catch((err) => {
-      console.log(err);
+      res.send({
+        payload: {
+          success: false,
+          errorMsg: "Something went wrong",
+        },
+      });
     });
 });
 
