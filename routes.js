@@ -11,6 +11,7 @@ router.get("/", function (req, res) {
 
 // ADD MOVIE //
 router.post("/add-movie", async function (req, res) {
+  console.log(req.body);
   let movieIsAlready = await checkIfMovieExists(req.body.title);
   if (movieIsAlready) {
     return res.send({
@@ -45,7 +46,7 @@ router.post("/add-movie", async function (req, res) {
 
 // GET ALL MOVIES //
 router.get("/all-movies", function (req, res) {
-    Movie.find()
+  Movie.find()
     .then((result) => {
       res.send({
         payload: {
@@ -58,7 +59,7 @@ router.get("/all-movies", function (req, res) {
       res.send({
         payload: {
           success: false,
-          errorMsg:"Something went wrong"
+          errorMsg: "Something went wrong",
         },
       });
     });
@@ -79,7 +80,7 @@ router.get("/movie/:id", function (req, res) {
       res.send({
         payload: {
           success: false,
-          errorMsg:"Something went wrong"
+          errorMsg: "Something went wrong",
         },
       });
     });
@@ -89,7 +90,7 @@ router.get("/movie/:id", function (req, res) {
 router.get("/filter/", async function (req, res) {
   const filters = req.query;
 
-  console.log(filters)
+  console.log(filters);
 
   const query = Movie.find();
 
@@ -124,12 +125,12 @@ router.get("/filter/", async function (req, res) {
 
 // DELETE MOVIE  //
 // Switch from get to post or delete method //
-router.delete("/del-movie/:id", (req, res) => {
-  const id = req.params.id;
+router.post("/del-movie/", (req, res) => {
+  const id = req.body.id;
+
   Movie.findByIdAndDelete(id)
     .then((result) => {
-
-      console.log("MOVIE DELETED")
+      console.log("MOVIE DELETED");
       res.send({
         payload: {
           success: true,
@@ -141,6 +142,7 @@ router.delete("/del-movie/:id", (req, res) => {
       res.send({
         payload: {
           success: false,
+          errorMsg: "Something went wrong",
         },
       });
     });
@@ -148,6 +150,8 @@ router.delete("/del-movie/:id", (req, res) => {
 
 // UPDATE MOVIE //
 router.post("/update/:id", (req, res) => {
+  console.log(req.body);
+
   Movie.updateOne(
     { _id: req.body._id },
     {
@@ -155,6 +159,7 @@ router.post("/update/:id", (req, res) => {
       year: req.body.year,
       genre: req.body.genre,
       lore: req.body.lore,
+      image: req.body.image,
     }
   )
     .then((result) => {
