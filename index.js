@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require("express");
 const app = express();
 const cors = require("cors");
@@ -10,7 +11,8 @@ const port = 3000;
 
 mongoose
   .connect(
-    "mongodb+srv://Wepukka:JXgdWvIhfC2hpfaX@vueproc.wrsdin2.mongodb.net/VueDb"
+    process.env.MONGO_URL
+    
   )
   .then((result) =>
     app.listen(port, () => {
